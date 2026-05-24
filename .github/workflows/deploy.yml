@@ -1,0 +1,58 @@
+# name: Deploy Mr Tunde's Task Manager Application to Elastic Beanstalk
+
+# on:
+#   push:
+#     branches: [main]
+
+# env:
+#   AWS_REGION: us-east-1
+#   EB_APP_NAME: task-manager
+#   EB_ENV_NAME: task-manager-env
+#   S3_BUCKET: ${{ secrets.S3_BUCKET }}
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: 18
+
+#       - run: npm ci --production
+
+#       - name: Create deployment package
+#         run: zip -r deploy.zip . -x "*.git*"
+
+#       - uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ env.AWS_REGION }}
+
+#       - name: Upload to S3
+#         run: |
+#           VERSION_LABEL="task-manager-${{ github.sha }}-$(date +%s)"
+#           aws s3 cp deploy.zip s3://${{ env.S3_BUCKET }}/$VERSION_LABEL.zip
+#           echo "VERSION_LABEL=$VERSION_LABEL" >> $GITHUB_ENV
+
+#       - name: Create EB application version
+#         run: |
+#           aws elasticbeanstalk create-application-version \
+#             --application-name ${{ env.EB_APP_NAME }} \
+#             --version-label ${{ env.VERSION_LABEL }} \
+#             --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=${{ env.VERSION_LABEL }}.zip
+
+#       - name: Deploy to EB
+#         run: |
+#           aws elasticbeanstalk update-environment \
+#             --application-name ${{ env.EB_APP_NAME }} \
+#             --environment-name ${{ env.EB_ENV_NAME }} \
+#             --version-label ${{ env.VERSION_LABEL }}
+
+#       - name: Wait for deployment
+#         run: |
+#           aws elasticbeanstalk wait environment-updated \
+#             --application-name ${{ env.EB_APP_NAME }} \
+#             --environment-names ${{ env.EB_ENV_NAME }}
