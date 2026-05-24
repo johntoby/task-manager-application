@@ -103,7 +103,7 @@ When prompted:
 ### Step 4: Create the Elastic Beanstalk Environment with RDS
 
 ```bash
-eb create task-manager-env --database --database.engine mysql --database.instance db.t3.micro --database.username admin --database.password YourSecurePassword123!
+eb create task-manager-env --database --database.engine mysql --database.instance db.t3.micro --database.username admin --database.password 'Jagabanthebadguy2027!!!'
 ```
 
 > ⚠️ Replace `YourSecurePassword123!` with a strong password. The password must be at least 8 characters.
